@@ -21,7 +21,7 @@ class VectorEngine:
 
         os.makedirs(self.db_dir, exist_ok=True)
 
-        print(f" Loading embedding model: {self.model_name}")
+        print(f"Loading embedding model: {self.model_name}")
 
         self.embed_model = SentenceTransformer(
             self.model_name,
@@ -31,18 +31,18 @@ class VectorEngine:
         self.index = None
         self.documents = []
 
-    def load_index(self):
+    def load_index(self) -> bool:
         if os.path.exists(self.index_path) and os.path.exists(self.pickle_path):
             self.index = faiss.read_index(self.index_path)
             with open(self.pickle_path, "rb") as f:
                 self.documents = pickle.load(f)
-            print("Index loaded")
+            print("Index loaded successfully.")
             return True
         return False
 
-    def build_index(self, docs):
+    def build_index(self, docs: list[dict]):
         if not docs:
-            raise ValueError("Document list is empty")
+            raise ValueError("Document list is empty.")
 
         self.documents = docs
 
@@ -51,7 +51,7 @@ class VectorEngine:
         else:
             texts = [d["content"] for d in docs]
 
-        print(f" Encoding {len(texts)} documents...")
+        print(f"Encoding {len(texts)} chunks...")
 
         embeddings = self.embed_model.encode(
             texts,
@@ -61,7 +61,6 @@ class VectorEngine:
         ).astype("float32")
 
         dimension = embeddings.shape[1]
-
         self.index = faiss.IndexFlatIP(dimension)
         self.index.add(embeddings)
 
@@ -69,11 +68,11 @@ class VectorEngine:
         with open(self.pickle_path, "wb") as f:
             pickle.dump(self.documents, f)
 
-        print("Index built & saved")
+        print("Index built and saved.")
 
-    def search(self, query, k=config.top_k):
+    def search(self, query: str, k: int = config.top_k) -> str:
         if self.index is None:
-            raise ValueError("Index not loaded")
+            raise ValueError("Index not loaded. Call load_index() or build_index() first.")
 
         if self.is_e5:
             query = f"query: {query}"
@@ -87,12 +86,10 @@ class VectorEngine:
         distances, indices = self.index.search(query_vec, k)
 
         results = []
-
         for idx in indices[0]:
             if idx == -1:
                 continue
-
             doc = self.documents[idx]
-            results.append(doc["content"])
+            results.append(f"[來源：{doc['source']}]\n{doc['content']}")
 
         return "\n-----\n".join(results)

@@ -2,6 +2,5 @@
 vector_index/
 __pycache__/
 .vscode/
-test_file/
 venv/
 .env_venv

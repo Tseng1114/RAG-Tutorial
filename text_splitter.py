@@ -1,31 +1,22 @@
-import os
-import glob
-import fitz
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import config
 
-def load_and_split_pdf(directory):
-    all_chunks = []
-    file_pattern = os.path.join(directory, "*.pdf")
-    
+
+def split_documents(raw_docs: list[dict]) -> list[dict]:
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=config.chunk_size, 
+        chunk_size=config.chunk_size,
         chunk_overlap=config.chunk_overlap
     )
 
-    for file_path in glob.glob(file_pattern):
-        file_name = os.path.basename(file_path) 
-        print(f"reading: {file_name}")
-        doc = fitz.open(file_path)
-        full_text = "".join([page.get_text() for page in doc])
-        
-        chunks = splitter.split_text(full_text)
+    all_chunks = []
 
-        for content in chunks:
+    for doc in raw_docs:
+        chunks = splitter.split_text(doc["content"])
+        for chunk_text in chunks:
             all_chunks.append({
-                "content": content,
-                "source": file_name
+                "content": chunk_text,
+                "source": doc["source"]
             })
-        doc.close()
-        
-    return all_chunks 
+
+    print(f"Split into {len(all_chunks)} chunk(s).")
+    return all_chunks
