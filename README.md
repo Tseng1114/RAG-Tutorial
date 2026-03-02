@@ -115,8 +115,8 @@ flowchart TD
     F --> G[Corresponding Loader parses text]
     G --> H[split_documents]
     H --> I[build_index<br/>SentenceTransformer encoding]
-    I --> J[write_index]
-    J --> K[store index <br/>in chunks.pkl]
+ 
+    I --> K[store index <br/>in chunks.pkl]
     K --> L
 
     D -- Yes --> L[Load index]
