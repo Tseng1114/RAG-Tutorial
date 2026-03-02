@@ -1,0 +1,11 @@
+RAG System Introduction
+
+RAG stands for Retrieval-Augmented Generation.
+It combines document retrieval with large language models.
+
+Key Components:
+- Document Loader: supports PDF, DOCX, PPTX, XLSX, CSV, TXT
+- Text Splitter: splits documents into chunks
+- Embedding Model: converts text to vectors
+- Vector Database: stores and retrieves embeddings
+- LLM: generates answers based on retrieved context

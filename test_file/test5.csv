@@ -1,0 +1,7 @@
+Model,Type,Provider,Size
+llama3.2,Local,Ollama,3B
+qwen2.5,Local,Ollama,7B
+gemma2,Local,Ollama,9B
+phi3.5,Local,Ollama,3.8B
+gemini-2.5-flash,API,Google,N/A
+gemini-2.5-pro,API,Google,N/A

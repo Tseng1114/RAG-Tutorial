@@ -6,7 +6,7 @@ load_dotenv()
 base_dir = os.path.dirname(os.path.abspath(__file__))
 vector_index_dir = os.path.join(base_dir, "vector_index")
 
-LLM_MODE = "local"   # "local" 或 "api"
+LLM_MODE = "api"   # "local" or "api"
 
 #If you choose "local", specify the model you have downloaded(ollama pull LLM_NAME):
 LOCAL_MODEL = "llama3.2"
