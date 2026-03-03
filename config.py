@@ -14,10 +14,12 @@ LOCAL_MODEL = "llama3.2"
 #llama3.2、qwen2.5、gemma2、phi3.5
 
 #If you choose "api", specify the model name and API key:
-API_MODEL = "gpt-4o"
+API_MODEL_gemini = "gemini-2.5-flash"
 #gemini: gemini-2.5-flash、gemini-2.5-pro
+API_MODEL_groq = "llama-3.3-70b-versatile"
 #groq: llama-3.3-70b-versatile、mixtral-8x7b-32768、gemma2-9b-it、meta-llama/llama-4-scout-17b-16e-instruct
-#github: gpt-4o、claude-3-5-sonnet、o1-mini
+API_MODEL_github_model = "gpt-4o"
+#github: gpt-4o、o1-mini
 
 #Choose your embedding model, you can run download.py to download the model
 embedding_model_name = "intfloat/multilingual-e5-small"
@@ -37,5 +39,5 @@ documents_pickle_path = os.path.join(vector_index_dir, "documents.pkl")
 
 llm_API_key_gemini = os.getenv("LLM_API_KEY_gemini")
 llm_API_key_groq = os.getenv("LLM_API_KEY_groq")
-llm_github_token = os.getenv("LLM_github_token")
+llm_github_models_token = os.getenv("LLM_GitHub_models_token")
 ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")

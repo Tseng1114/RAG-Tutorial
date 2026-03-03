@@ -7,6 +7,7 @@ from documents_loader import load_documents
 from text_splitter import split_documents
 from vector_database import VectorEngine
 from prompts import get_rag_prompt
+from token_quota_check import token_usage_groq,token_usage_gemini,token_usage_github_models
 
 def call_local(prompt: str) -> str:
     url = f"{config.ollama_base_url}/api/generate"
@@ -24,14 +25,14 @@ def call_api(prompt: str) -> str:
     if config.API_TYPE == "gemini":
         client = genai.Client(api_key=config.llm_API_key_gemini)
         response = client.models.generate_content(
-            model=config.API_MODEL,
+            model=config.API_MODEL_gemini,
             contents=prompt
         )
         return response.text
     elif config.API_TYPE == "groq":
         client = Groq(api_key=config.llm_API_key_groq)
         completion = client.chat.completions.create(
-            model=config.API_MODEL,
+            model=config.API_MODEL_groq,
             messages=[
                 {"role": "user", "content": prompt}
             ],
@@ -41,11 +42,11 @@ def call_api(prompt: str) -> str:
     elif config.API_TYPE == "github":
         client = openai.OpenAI(
             base_url="https://models.github.ai/inference",
-            api_key=config.llm_github_token,
+            api_key=config.llm_github_models_token,
         )
         response = client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
-            model=config.API_MODEL,
+            model=config.API_MODEL_github_model,
             temperature=0.7,
         )
         return response.choices[0].message.content
@@ -63,8 +64,12 @@ def get_llm_response(prompt: str) -> str:
 def main():
     if config.LLM_MODE == "local":
         print(f"LLM Mode: Local -- ({config.LOCAL_MODEL})")
-    else:
-        print(f"LLM Mode: API --({config.API_MODEL})")
+    elif config.LLM_MODE == "api" and config.API_TYPE == 'groq':
+        print(f"LLM Mode: API --({config.API_MODEL_groq})")
+    elif config.LLM_MODE == "api" and config.API_TYPE == 'gemini':
+        print(f"LLM Mode: API --({config.API_MODEL_gemini})")
+    elif config.LLM_MODE == "api" and config.API_TYPE == 'github':
+        print(f"LLM Mode: API --({config.API_MODEL_github_model})")
 
     vector_engine = VectorEngine()
 
@@ -84,6 +89,7 @@ def main():
     print("\n" + "==" * 30)
     print("Ready! You can ask any questions now.")
     print("Enter 'exit' or 'quit' to end this conversation.")
+    print("Enter quota to check your quoto.")
     print("==" * 30 + "\n")
 
     while True:
@@ -92,7 +98,16 @@ def main():
         if user_query.lower() in ['exit', 'quit']:
             print("See you next time!")
             break
-
+        if user_query.lower() in ['quota']:
+            if(config.API_TYPE == 'groq'):
+                token_usage_groq()
+                continue
+            elif(config.API_TYPE == 'gemini'):
+                token_usage_gemini()
+                continue
+            elif(config.API_TYPE == 'github'):
+                token_usage_github_models()
+                continue            
         if not user_query:
             continue
 
