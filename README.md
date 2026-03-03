@@ -9,23 +9,33 @@ pip install -r requirements.txt
 
 create a `.env` file in the project root directory: <br>
 ```
-LLM_API_KEY=your_api_key     #gemini, ...
+#Gemini
+LLM_API_KEY=your_api_key
+#Groq     
+LLM_API_KEY_groq=your_api_key
+#GitHub
+LLM_github_token=your_access_token
 DATA_PATH=test_file          #path to your documents
 ```
 
 3.  Place your documents
 
-put your files into the test_file folder (or whichever folder you set in DATA_PATH).
+put your files into the `test_file` folder (or whichever folder you set in DATA_PATH).
 
-4. Run 'download.py' if you haven't downloaded an embedding model yet
+4. Run `download.py` if you haven't downloaded an embedding model yet
 ```
 python download.py
 ```
 5. Configure `config.py`
 ```
 LLM_MODE = "local"                                      # "local" or "api"
+API_TYPE = "github"                                     # if you choose api, specify "gemini", "groq" or "github"
 LOCAL_MODEL = "llama3.2"                                # e.g. llama3.2, qwen2.5, gemma2, phi3.5
-API_MODEL = "gemini-2.5-flash"                          # e.g. gemini-2.5-flash, gemini-2.5-pro
+API_MODEL = "gemini-2.5-flash"
+#gemini: gemini-2.5-flash、gemini-2.5-pro
+#groq: llama-3.3-70b-versatile、mixtral-8x7b-32768、gemma2-9b-it、meta-llama/llama-4-scout-17b-16e-instruct
+#github: gpt-4o、claude-3-5-sonnet、o1-mini
+                        
 embedding_model_name = "intfloat/multilingual-e5-small" # e.g. BAAI/bge-m3, nomic-ai/nomic-embed-text-v1.5
 
 # Chunking & retrieval settings
