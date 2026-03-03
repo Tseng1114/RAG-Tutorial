@@ -41,7 +41,7 @@ python main.py
 # Notice
 
 The vector index is cached in vector_index/. If you add or change documents, delete the index folder and re-run
-# Flowchart
+# Architecture diagram
 ```mermaid
 flowchart LR
 subgraph INPUT ["Input Documents"]
@@ -102,4 +102,44 @@ end
 
     INPUT --> B
     E -->|load index| H
+```
+# Flowchart
+```mermaid
+flowchart TD
+    A([Start]) --> B[Configure relevant settings]
+    B --> C[Initialize VectorEngine and load embedding model]
+    C --> D{Does the vector index exist?}
+
+    D -- No --> E[load_documents]
+    E --> F{detect file extension<br/>.pdf / .docx / .pptx / <br/> .xlsx / .csv / .txt}
+    F --> G[Corresponding Loader parses text]
+    G --> H[split_documents]
+    H --> I[build_index<br/>SentenceTransformer encoding]
+ 
+    I --> K[store index <br/>in chunks.pkl]
+    K --> L
+
+    D -- Yes --> L[Load index]
+
+    L --> M([Ready])
+
+    M --> N[user_query]
+    N --> O{exit or quit？}
+    O -- Yes --> P([Finish])
+    O --No --> Q[search</br>top-K similarity Search]
+    Q --> R[get_rag_prompt</br> Combine context and query]
+    R --> S{LLM mode}
+    S -- LOCAL --> T[get_llm_response<br/>call_local]
+    S -- API --> U[get_llm_response<br/>call_api]
+    T --> V[Answer]
+    U --> V
+    V --> N
+
+    style A fill:#4F46E5,color:#fff
+    style M fill:#059669,color:#fff
+    style P fill:#DC2626,color:#fff
+    style D fill:#D97706,color:#fff
+    style F fill:#D97706,color:#fff
+    style O fill:#D97706,color:#fff
+    style S fill:#D97706,color:#fff
 ```
