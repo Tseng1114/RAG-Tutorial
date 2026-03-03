@@ -1,5 +1,7 @@
 import requests
 from google import genai
+from groq import Groq
+import openai
 import config
 from documents_loader import load_documents
 from text_splitter import split_documents
@@ -19,12 +21,36 @@ def call_local(prompt: str) -> str:
 
 
 def call_api(prompt: str) -> str:
-    client = genai.Client(api_key=config.llm_API_key)
-    response = client.models.generate_content(
-        model=config.API_MODEL,
-        contents=prompt
-    )
-    return response.text
+    if config.API_TYPE == "gemini":
+        client = genai.Client(api_key=config.llm_API_key_gemini)
+        response = client.models.generate_content(
+            model=config.API_MODEL,
+            contents=prompt
+        )
+        return response.text
+    elif config.API_TYPE == "groq":
+        client = Groq(api_key=config.llm_API_key_groq)
+        completion = client.chat.completions.create(
+            model=config.API_MODEL,
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+        )
+        return completion.choices[0].message.content
+    elif config.API_TYPE == "github":
+        client = openai.OpenAI(
+            base_url="https://models.github.ai/inference",
+            api_key=config.llm_github_token,
+        )
+        response = client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model=config.API_MODEL,
+            temperature=0.7,
+        )
+        return response.choices[0].message.content
+    else:
+        raise ValueError("Invalid API type specified.")
 
 
 def get_llm_response(prompt: str) -> str:
